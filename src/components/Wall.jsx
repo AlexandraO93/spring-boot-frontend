@@ -44,13 +44,14 @@ import {API_BASE_URL} from "../config/api.js";
 
 const Wall = () => {
     const {token, userId} = useAuth();
-
     const [posts, setPosts] = useState([]);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [newPostText, setNewPostText] = useState("");
+    const [page, setPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
 
-    const fetchPosts = async () => {
+    const fetchPosts = async (pageToLoad = 0) => {
         if (!token || !userId) {
             setLoading(false);
             return;
@@ -58,7 +59,7 @@ const Wall = () => {
 
         try {
             const res = await fetch(
-                `${API_BASE_URL}/users/${userId}/with-posts`,
+                `${API_BASE_URL}/users/${userId}/with-posts?page=${pageToLoad}&size=5`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -71,7 +72,8 @@ const Wall = () => {
             }
 
             const data = await res.json();
-            setPosts(data.posts);
+            setPosts(data.posts.content);
+            setHasMore(!data.posts.last);
             setUser(data.user);
         } catch (error) {
             console.error(error);
@@ -81,7 +83,9 @@ const Wall = () => {
     };
 
     useEffect(() => {
-        fetchPosts();
+        setPosts([]);
+        setPage(0);
+        fetchPosts(0);
     }, [token, userId]);
 
     const handleCreatePost = async () => {
@@ -154,6 +158,32 @@ const Wall = () => {
                     </li>
                 ))}
             </ul>
+            {/* 🟦 Ladda fler-knappen */}
+            {hasMore && (
+                <button
+                    onClick={() => {
+                        const nextPage = page + 1;
+                        setPage(nextPage);
+                        fetchPosts(nextPage);
+                    }}
+                >
+                    Ladda fler
+                </button>
+            )}
+
+            {/*Tagit hjälp av AI för att få fram en "föregående" knapp*/}
+            {page > 0 && (
+                <button
+                    onClick={() => {
+                        const previousPage = page - 1;
+                        setPage(previousPage);
+                        setPosts([]); // rensa listan
+                        fetchPosts(previousPage);
+                    }}
+                >
+                    Föregående
+                </button>
+            )}
         </div>
     );
 };

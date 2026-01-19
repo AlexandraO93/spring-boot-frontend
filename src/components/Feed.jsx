@@ -33,35 +33,37 @@ const Feed = () => {
     const {token, userId} = useAuth();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+
+    const fetchPosts = async (pageToLoad = 0) => {
+        if (!token) return;
+
+        try {
+            const res = await fetch(API_BASE_URL + `/posts?page=${pageToLoad}&size=5`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to fetch posts");
+            }
+
+            const data = await res.json();
+            setPosts(data.content);
+            setHasMore(!data.last)
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchPosts = async () => {
-            if (!token || !userId) {
-                setLoading(false);
-                return;
-            }
-
-            try {
-                const res = await fetch(API_BASE_URL + "/posts", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!res.ok) {
-                    throw new Error("Failed to fetch posts");
-                }
-
-                const data = await res.json();
-                setPosts(data);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPosts();
+        setPosts([]);
+        setPage(0);
+        fetchPosts(0);
     }, [token, userId]);
 
     if (loading) {
@@ -86,6 +88,31 @@ const Feed = () => {
                     </li>
                 ))}
             </ul>
+            {/* 🟦 Ladda fler-knappen */}
+            {hasMore && (
+                <button
+                    onClick={() => {
+                        const nextPage = page + 1;
+                        setPage(nextPage);
+                        fetchPosts(nextPage);
+                    }}
+                >
+                    Ladda fler
+                </button>
+            )}
+            {/*Tagit hjälp av AI för att få fram en "föregående" knapp*/}
+            {page > 0 && (
+                <button
+                    onClick={() => {
+                        const previousPage = page - 1;
+                        setPage(previousPage);
+                        setPosts([]); // rensa listan
+                        fetchPosts(previousPage);
+                    }}
+                >
+                    Föregående
+                </button>
+            )}
         </div>
     );
 };
