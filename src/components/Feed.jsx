@@ -37,6 +37,7 @@ const Feed = () => {
     const [hasMore, setHasMore] = useState(true);
 
     console.log("API_BASE_URL:", import.meta.env.VITE_API_BASE_URL);
+    console.log("TOKEN:", token);
 
     const fetchPosts = async (pageToLoad = 0) => {
         if (!token) return;
