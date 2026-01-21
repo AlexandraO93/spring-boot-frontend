@@ -36,6 +36,8 @@ const Feed = () => {
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
 
+    console.log("API_BASE_URL:", import.meta.env.VITE_API_BASE_URL);
+
     const fetchPosts = async (pageToLoad = 0) => {
         if (!token) return;
 
@@ -78,7 +80,7 @@ const Feed = () => {
             {posts.length === 0 && <p>Inga inlägg hittades</p>}
 
             <ul className="post-list">
-                {posts.content.map((post) => (
+                {posts.map((post) => (
                     <li key={post.id} className="post-card">
                         <p className="post-text">{post.text}</p>
                         <hr/>
