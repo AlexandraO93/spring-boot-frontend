@@ -1,6 +1,7 @@
 import {Outlet, useNavigate} from "react-router-dom";
 import {useAuth} from "../context/useAuth";
 import "./Layout.css";
+import NavBar from "./NavBar";
 
 /*
  * Layout
@@ -35,6 +36,9 @@ const Layout = () => {
 
     return (
         <>
+            {/* Visa NavBar endast när användaren är inloggad */}
+            {token && <NavBar/>}
+
             <header className="app-header">
                 <h1>Jensen social app</h1>
 
@@ -53,7 +57,7 @@ const Layout = () => {
             </main>
 
             <footer className="app-footer">
-                <p>© Håkan Gleissman Sprinto 2026</p>
+                <p>© TheGreat8 2026</p>
             </footer>
         </>
     );
