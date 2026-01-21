@@ -50,6 +50,9 @@ const Wall = () => {
     const [newPostText, setNewPostText] = useState("");
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingPostId, setEditingPostId] = useState(null);
+    const [editingText, setEditingText] = useState("");
 
     const fetchPosts = async (pageToLoad = 0) => {
         if (!token || !userId) {
@@ -57,6 +60,7 @@ const Wall = () => {
             return;
         }
 
+        setLoading(true);
         try {
             const res = await fetch(
                 `${API_BASE_URL}/users/${userId}/with-posts?page=${pageToLoad}&size=5`,
@@ -72,6 +76,7 @@ const Wall = () => {
             }
 
             const data = await res.json();
+            console.log("Hämtade inlägg och användardata:", data.posts.content[0]);
             setPosts(data.posts.content);
             setHasMore(!data.posts.last);
             setUser(data.user);
@@ -83,10 +88,15 @@ const Wall = () => {
     };
 
     useEffect(() => {
-        setPosts([]);
+        if (!token || !userId) return;
         setPage(0);
-        fetchPosts(0);
     }, [token, userId]);
+
+    useEffect(() => {
+        if (!token || !userId) return;
+        fetchPosts(page);
+    }, [page, token, userId]);
+
 
     const handleCreatePost = async () => {
         if (!newPostText.trim()) {
@@ -118,6 +128,76 @@ const Wall = () => {
             console.error(error);
         }
     };
+
+    const handleEditPost = (postId, currentText) => {
+        console.log("Redigera inlägg:", postId);
+        setEditingPostId(postId);
+        setEditingText(currentText);
+        setIsEditing(true);
+
+    };
+
+    const saveEdit = async () => {
+        if (!token) return;
+
+        try {
+            const res = await fetch(API_BASE_URL + `/posts/${editingPostId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({text: editingText}),
+            });
+
+            if (!res.ok) {
+                console.log("Inlägget redigerades inte korrekt");
+                throw new Error("Failed to edit post");
+            }
+
+            const updatedPost = await res.json();
+            setPosts((prevPosts) =>
+                prevPosts.map((post) =>
+                    post.id === editingPostId ? updatedPost : post)
+            );
+            setIsEditing(false);
+            setEditingPostId(null);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleDeletePost = (postId) => {
+        const confirmed = window.confirm("Är du säker på att du vill ta bort inlägget?")
+        if (!confirmed) return;
+        if (!token) return;
+        console.log("Ta bort inlägg:", postId);
+        deletePost(postId);
+    };
+
+    const deletePost = async (postId) => {
+        if (!token) return;
+
+        try {
+            const res = await fetch(API_BASE_URL + `/posts/${postId}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            if (!res.ok) {
+                console.log("Inlägget togs inte bort korrekt");
+                throw new Error("Failed to delete post");
+            }
+
+            // Uppdatera listan med inlägg efter borttagning
+            setPosts((prevPosts) =>
+                prevPosts.filter((post) => post.id !== postId));
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     if (loading || !user) {
         return <p>Laddar inlägg...</p>;
@@ -153,8 +233,15 @@ const Wall = () => {
                         <p className="post-text">{post.text}</p>
                         <hr/>
                         <small className="post-date">
-                            {new Date(post.createdAt).toLocaleString()} av {user.displayName}
+                            {new Date(post.createdAt).toLocaleString()}
                         </small>
+
+                        {post.userId === userId && (
+                            <div className="post-actions">
+                                <button onClick={() => handleEditPost(post.id, post.text)}>Redigera</button>
+                                <button onClick={() => handleDeletePost(post.id)}>Ta bort</button>
+                            </div>
+                        )}
                     </li>
                 ))}
             </ul>
@@ -183,6 +270,23 @@ const Wall = () => {
                 >
                     Föregående
                 </button>
+            )}
+            {isEditing && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h3>Redigera inlägg</h3>
+
+                        <textarea
+                            value={editingText}
+                            onChange={(e) => setEditingText(e.target.value)}
+                        />
+
+                        <div className="modal-actions">
+                            <button onClick={saveEdit}>Spara</button>
+                            <button onClick={() => setIsEditing(false)}>Avbryt</button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
