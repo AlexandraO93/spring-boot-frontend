@@ -36,9 +36,6 @@ const Feed = () => {
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
 
-    console.log("API_BASE_URL:", import.meta.env.VITE_API_BASE_URL);
-    console.log("TOKEN:", token);
-
     const fetchPosts = async (pageToLoad = 0) => {
         if (!token) return;
 
@@ -50,10 +47,12 @@ const Feed = () => {
             });
 
             if (!res.ok) {
+                console.log("Posts hämtades inte korrekt");
                 throw new Error("Failed to fetch posts");
             }
 
             const data = await res.json();
+            console.log(data);
             setPosts(data.content);
             setHasMore(!data.last)
         } catch (error) {
@@ -84,7 +83,13 @@ const Feed = () => {
                 {posts.map((post) => (
                     <li key={post.id} className="post-card">
                         <p className="post-text">{post.text}</p>
-                        <hr/>
+                        <small className="post-author">
+                            av{" "}
+                            <Link to={`/wall/${post.userId}`}>{post.username}</Link>
+                        </small>
+
+                        <span className="dot">·</span>
+
                         <small className="post-date">
                             {new Date(post.createdAt).toLocaleString()}
                         </small>

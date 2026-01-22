@@ -34,6 +34,7 @@ const LoginForm = () => {
     //tillägg
     useEffect(() => {
         if (token) {
+            console.log("Inloggning lyckades, token:", token);
             //navigerar till feed sidan efter inloggning
             navigate("/feed");
         }

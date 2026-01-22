@@ -37,7 +37,9 @@ export const AuthProvider = ({children}) => {
         const data = await res.json();
 
         setToken(data.token);
+        console.log("Inloggad, token:", data.token);
         setUserId(data.userId);
+        console.log("Inloggad, userId:", data.userId);
 
         // Persistera auth-data
         localStorage.setItem("token", data.token);

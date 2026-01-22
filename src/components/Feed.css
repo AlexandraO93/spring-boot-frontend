@@ -46,3 +46,8 @@ hr {
     color: rgb(202, 198, 198);
     font-size: 0.85rem;
 }
+
+.dot {
+    margin: 0 0.6rem;
+    opacity: 0.6;
+}
