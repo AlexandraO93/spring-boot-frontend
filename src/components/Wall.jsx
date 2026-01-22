@@ -201,6 +201,8 @@ const Wall = () => {
 
     if (loading || !user) {
         return <p>Laddar inlägg...</p>;
+
+
     }
 
     return (
@@ -236,7 +238,7 @@ const Wall = () => {
                             {new Date(post.createdAt).toLocaleString()}
                         </small>
 
-                        {post.userId === userId && (
+                        {(post.userId) === (userId) && (
                             <div className="post-actions">
                                 <button onClick={() => handleEditPost(post.id, post.text)}>Redigera</button>
                                 <button onClick={() => handleDeletePost(post.id)}>Ta bort</button>

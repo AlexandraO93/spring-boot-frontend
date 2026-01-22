@@ -1,10 +1,10 @@
 import './App.css'
-import LoginForm from "./components/LoginForm.jsx";
 import {Navigate, Route, Routes} from "react-router-dom";
 import Feed from "./components/Feed.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Wall from "./components/Wall.jsx";
 import Layout from "./components/Layout.jsx";
+import AuthForm from "./components/AuthForm.jsx";
 
 /*
  * App
@@ -22,7 +22,7 @@ function App() {
             <Route path="/" element={<Navigate to="/login" replace/>}/>
             <Route path="/" element={<Layout/>}>
 
-                <Route path="/login" element={<LoginForm/>}/>
+                <Route path="/login" element={<AuthForm/>}/>
 
                 {/* Skyddad sektion */}
                 <Route element={<ProtectedRoute/>}>
@@ -35,5 +35,7 @@ function App() {
 
     )
 }
+
+<Route path="/login" element={<AuthForm/>}/>
 
 export default App;
