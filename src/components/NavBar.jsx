@@ -5,6 +5,7 @@ import {useAuth} from "../context/useAuth";
 const NavBar = () => {
     const {userId} = useAuth(); // hämtar inloggad användares id
 
+    console.log("Logged-in userId:", userId);
     return (
         <nav className="navbar">
             <ul>
