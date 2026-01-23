@@ -86,7 +86,7 @@ const Feed = () => {
                         <p className="post-text">{post.text}</p>
                         <small className="post-author">
                             av{" "}
-                            <Link to={`/wall/${post.user?.id}`}>{post.user?.username}</Link>
+                            <Link to={`/wall/${post.userId}`}>{post.username}</Link>
                         </small>
 
                         <span className="dot">·</span>
