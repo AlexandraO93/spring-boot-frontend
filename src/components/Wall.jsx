@@ -44,9 +44,10 @@ import {useParams} from "react-router-dom";
 
 
 const Wall = () => {
-    const {token, userId} = useAuth();
+    const {token, user: authUser} = useAuth(); //Inloggad användare
+    const {userId: wallUserId} = useParams(); //Användaren vars sida visas
     const [posts, setPosts] = useState([]);
-    const [user, setUser] = useState(null);
+    const [wallUser, setWallUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [newPostText, setNewPostText] = useState("");
     const [page, setPage] = useState(0);
@@ -54,7 +55,6 @@ const Wall = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editingPostId, setEditingPostId] = useState(null);
     const [editingText, setEditingText] = useState("");
-    const {userId: wallUserId} = useParams();
 
     const fetchPosts = async (pageToLoad = 0) => {
         if (!token || !wallUserId) {
@@ -79,9 +79,9 @@ const Wall = () => {
 
             const data = await res.json();
             console.log("Hämtade inlägg och användardata:", data.posts.content[0]);
+            setWallUser(data.user);
             setPosts(data.posts.content);
             setHasMore(!data.posts.last);
-            setUser(data.user);
         } catch (error) {
             console.error(error);
         } finally {
@@ -136,7 +136,6 @@ const Wall = () => {
         setEditingPostId(postId);
         setEditingText(currentText);
         setIsEditing(true);
-
     };
 
     const saveEdit = async () => {
@@ -201,33 +200,35 @@ const Wall = () => {
         }
     }
 
-    if (loading || !user) {
+    if (loading || !wallUser) {
         return <p>Laddar inlägg...</p>;
-
-
     }
+
+    const isMyWall = authUser && authUser.id === Number(wallUserId);
 
     return (
         <div className="feed-container">
-            <h1 className="center">{user.displayName}</h1>
+            <h1 className="center">{wallUser.displayName}</h1>
 
             <div className="about-me">
                 <p>
-                    <b>Om mig:</b> {user.bio}
+                    <b>Om mig:</b> {wallUser.bio}
                 </p>
             </div>
 
             {/* Skapa nytt inlägg */}
-            <div className="create-post">
+            {isMyWall && (
+                <div className="create-post">
                 <textarea
                     value={newPostText}
                     onChange={(e) => setNewPostText(e.target.value)}
                     placeholder="Skriv ett nytt inlägg..."
                 />
-                <button onClick={handleCreatePost}>
-                    Publicera
-                </button>
-            </div>
+                    <button onClick={handleCreatePost}>
+                        Publicera
+                    </button>
+                </div>
+            )}
 
             {posts.length === 0 && <p>Inga inlägg hittades</p>}
 
@@ -240,7 +241,7 @@ const Wall = () => {
                             {new Date(post.createdAt).toLocaleString()}
                         </small>
 
-                        {post.userId === userId && (
+                        {isMyWall && authUser.id === post.userId && (
                             <div className="post-actions">
                                 <button onClick={() => handleEditPost(post.id, post.text)}>Redigera</button>
                                 <button onClick={() => handleDeletePost(post.id)}>Ta bort</button>

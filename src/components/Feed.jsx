@@ -30,7 +30,7 @@ import {API_BASE_URL} from "../config/api.js";
  */
 
 const Feed = () => {
-    const {token, userId} = useAuth();
+    const {token, userId, user} = useAuth();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(0);
@@ -86,7 +86,9 @@ const Feed = () => {
                         <p className="post-text">{post.text}</p>
                         <small className="post-author">
                             av{" "}
-                            <Link to={`/wall/${post.userId}`}>{post.username}</Link>
+                            <Link to={`/wall/${post.userId}`}>
+                                {post.username || post.user?.username || "Okänd"}
+                            </Link>
                         </small>
 
                         <span className="dot">·</span>
