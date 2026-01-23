@@ -22,6 +22,7 @@ export const AuthProvider = ({children}) => {
     const [userId, setUserId] = useState(
         localStorage.getItem("userId")
     );
+    const [user, setUser] = useState(null);
 
     const login = async (username, password) => {
         const res = await fetch(`${API_BASE_URL}/request-token`, {
@@ -44,6 +45,15 @@ export const AuthProvider = ({children}) => {
         // Persistera auth-data
         localStorage.setItem("token", data.token);
         localStorage.setItem("userId", data.userId);
+
+        const userRes = await fetch(`${API_BASE_URL}/users/${data.userId}`, {
+            headers: {
+                Authorization: `Bearer ${data.token}`,
+            }
+        });
+
+        const userData = await userRes.json();
+        setUser(userData);
     };
 
     const logout = () => {
@@ -55,7 +65,7 @@ export const AuthProvider = ({children}) => {
     };
 
     return (
-        <AuthContext.Provider value={{token, userId, login, logout}}>
+        <AuthContext.Provider value={{token, userId, user, login, logout}}>
             {children}
         </AuthContext.Provider>
     );
