@@ -74,7 +74,7 @@ const Feed = () => {
 
     return (
         <div className="feed-container">
-            <Link to="/wall">Till min sida</Link>
+            <Link to={`/wall/${userId}`}>Till min sida</Link>
             <h1>Inlägg</h1>
 
             {posts.length === 0 && <p>Inga inlägg hittades</p>}
