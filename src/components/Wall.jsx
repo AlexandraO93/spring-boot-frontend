@@ -8,7 +8,7 @@ import {useParams} from "react-router-dom";
 
 /*
  * Wall
- *
+ * 
  * Wall-komponenten representerar användarens personliga sida
  * ("min sida") i applikationen.
  *
