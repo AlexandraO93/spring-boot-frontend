@@ -27,7 +27,7 @@ function App() {
                 {/* Skyddad sektion */}
                 <Route element={<ProtectedRoute/>}>
                     <Route path="/feed" element={<Feed/>}/>
-                    <Route path="/wall" element={<Wall/>}/>
+                    <Route path="/wall/:userId" element={<Wall/>}/>
                 </Route>
             </Route>
 

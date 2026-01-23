@@ -3,6 +3,7 @@ import {useAuth} from "../context/useAuth";
 import "./Feed.css";
 import "./Wall.css";
 import {API_BASE_URL} from "../config/api.js";
+import {useParams} from "react-router-dom";
 
 
 /*
@@ -53,9 +54,10 @@ const Wall = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editingPostId, setEditingPostId] = useState(null);
     const [editingText, setEditingText] = useState("");
+    const {userId: wallUserId} = useParams();
 
     const fetchPosts = async (pageToLoad = 0) => {
-        if (!token || !userId) {
+        if (!token || !wallUserId) {
             setLoading(false);
             return;
         }
@@ -63,7 +65,7 @@ const Wall = () => {
         setLoading(true);
         try {
             const res = await fetch(
-                `${API_BASE_URL}/users/${userId}/with-posts?page=${pageToLoad}&size=5`,
+                `${API_BASE_URL}/users/${wallUserId}/with-posts?page=${pageToLoad}&size=5`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -88,14 +90,14 @@ const Wall = () => {
     };
 
     useEffect(() => {
-        if (!token || !userId) return;
+        if (!token || !wallUserId) return;
         setPage(0);
-    }, [token, userId]);
+    }, [token, wallUserId]);
 
     useEffect(() => {
-        if (!token || !userId) return;
+        if (!token || !wallUserId) return;
         fetchPosts(page);
-    }, [page, token, userId]);
+    }, [page, token, wallUserId]);
 
 
     const handleCreatePost = async () => {
@@ -105,7 +107,7 @@ const Wall = () => {
 
         try {
             const res = await fetch(
-                `${API_BASE_URL}/users/${userId}/posts`,
+                `${API_BASE_URL}/users/${wallUserId}/posts`,
                 {
                     method: "POST",
                     headers: {
