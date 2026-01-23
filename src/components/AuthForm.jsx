@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {useAuth} from "../context/useAuth";
 import "./LoginForm.css";
 import {useNavigate} from "react-router-dom";
+import {API_BASE_URL} from "../config/api.js";
 
 const AuthForm = () => {
     const {login, token} = useAuth();
@@ -21,7 +22,7 @@ const AuthForm = () => {
 
     const handleSubmit = async () => {
         if (isRegister) {
-            const res = await fetch("http://localhost:8080/users/register", {
+            const res = await fetch(`${API_BASE_URL}/users/register`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({username, email, password}),
