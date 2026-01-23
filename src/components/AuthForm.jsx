@@ -27,10 +27,9 @@ const AuthForm = () => {
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({username, email, password}),
             });
-
-            if (!res.ok) {
-                alert("Registrering misslyckades");
-                return;
+            const data = await res.json();
+            if (!data.token || res.json()) {
+                throw new Error("Registrering misslyckades");
             }
 
             alert("Konto skapat! Logga in.");

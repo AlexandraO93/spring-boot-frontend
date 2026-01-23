@@ -44,7 +44,7 @@ import {useParams} from "react-router-dom";
 
 
 const Wall = () => {
-    const {token, user: authUser} = useAuth(); //Inloggad användare
+    const {token, userId} = useAuth(); //Inloggad användare
     const {userId: wallUserId} = useParams(); //Användaren vars sida visas
     const [posts, setPosts] = useState([]);
     const [wallUser, setWallUser] = useState(null);
@@ -204,7 +204,7 @@ const Wall = () => {
         return <p>Laddar inlägg...</p>;
     }
 
-    const isMyWall = authUser && authUser.id === Number(wallUserId);
+    const isMyWall = Number(userId) === Number(wallUserId);
 
     return (
         <div className="feed-container">
@@ -241,7 +241,7 @@ const Wall = () => {
                             {new Date(post.createdAt).toLocaleString()}
                         </small>
 
-                        {isMyWall && authUser.id === post.userId && (
+                        {isMyWall && Number(userId) === post.userId && (
                             <div className="post-actions">
                                 <button onClick={() => handleEditPost(post.id, post.text)}>Redigera</button>
                                 <button onClick={() => handleDeletePost(post.id)}>Ta bort</button>
