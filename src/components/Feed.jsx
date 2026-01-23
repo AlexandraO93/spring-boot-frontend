@@ -30,7 +30,7 @@ import {API_BASE_URL} from "../config/api.js";
  */
 
 const Feed = () => {
-    const {token, userId, user} = useAuth();
+    const {token, userId} = useAuth();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(0);
