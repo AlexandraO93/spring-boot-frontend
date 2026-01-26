@@ -19,6 +19,7 @@
     margin-top: -20px;
     margin-bottom: 20px;
     text-align: center;
+    white-space: pre-wrap; /* visar radbrytningar */
 }
 
 .create-post textarea {

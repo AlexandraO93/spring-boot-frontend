@@ -44,7 +44,7 @@ import {useParams} from "react-router-dom";
 
 
 const Wall = () => {
-    const {token, userId} = useAuth(); //Inloggad användare
+    const {token, userId, user, setUser} = useAuth(); //Inloggad användare
     const {userId: wallUserId} = useParams(); //Användaren vars sida visas
     const [posts, setPosts] = useState([]);
     const [wallUser, setWallUser] = useState(null);
@@ -210,10 +210,17 @@ const Wall = () => {
 
         try {
             const updateData = {
-                displayName: wallUser.displayName,
-                bio: wallUser.bio,
-                profileImagePath: wallUser.profileImagePath,
+                displayName: wallUser.displayName?.trim(),
+                bio: wallUser.bio?.trim(),
+                profileImagePath: wallUser.profileImagePath?.trim() || null,
             };
+
+            console.log("Skickar updateData: ", updateData);
+
+            if (!updateData.displayName || !updateData.bio) {
+                alert("Display name och bio får inte vara tomma.");
+                return;
+            }
 
             const res = await fetch(`${API_BASE_URL}/users/me`, {
                 method: "PUT",
@@ -225,9 +232,11 @@ const Wall = () => {
             });
 
             if (!res.ok) {
-                let errorMsg = "kunde inte spara ändringar";
+                console.log("Backend svarade med status:", res.status);
+                let errorMsg = "Kunde inte spara ändringar";
                 try {
                     const errorData = await res.json();
+                    console.log("Error response från backend:", errorData);
                     if (errorData?.message) errorMsg = errorData.message;
                 } catch (e) {
                     console.error("Fel vid läsning av error-respons", e);
@@ -237,6 +246,11 @@ const Wall = () => {
 
             const updatedUser = await res.json();
             setWallUser(updatedUser);
+
+            if (isMyWall) {
+                setUser(updatedUser);
+            }
+
             setIsEditingProfile(false);
 
         } catch (err) {
