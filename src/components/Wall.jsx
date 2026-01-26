@@ -55,6 +55,7 @@ const Wall = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editingPostId, setEditingPostId] = useState(null);
     const [editingText, setEditingText] = useState("");
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
 
     const fetchPosts = async (pageToLoad = 0) => {
         if (!token || !wallUserId) {
@@ -78,9 +79,8 @@ const Wall = () => {
             }
 
             const data = await res.json();
-            console.log("Hämtade inlägg och användardata:", data.posts.content[0]);
-            setWallUser(data.user);
             setPosts(data.posts.content);
+            setWallUser(data.user);
             setHasMore(!data.posts.last);
         } catch (error) {
             console.error(error);
@@ -199,12 +199,51 @@ const Wall = () => {
             console.error(error);
         }
     }
-
     if (loading || !wallUser) {
         return <p>Laddar inlägg...</p>;
     }
 
     const isMyWall = Number(userId) === Number(wallUserId);
+
+    const saveProfile = async () => {
+        if (!token) return;
+
+        try {
+            const updateData = {
+                displayName: wallUser.displayName,
+                bio: wallUser.bio,
+                profileImagePath: wallUser.profileImagePath,
+            };
+
+            const res = await fetch(`${API_BASE_URL}/users/me`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(updateData),
+            });
+
+            if (!res.ok) {
+                let errorMsg = "kunde inte spara ändringar";
+                try {
+                    const errorData = await res.json();
+                    if (errorData?.message) errorMsg = errorData.message;
+                } catch (e) {
+                    console.error("Fel vid läsning av error-respons", e);
+                }
+                throw new Error(errorMsg);
+            }
+
+            const updatedUser = await res.json();
+            setWallUser(updatedUser);
+            setIsEditingProfile(false);
+
+        } catch (err) {
+            console.error("Save profile error", err);
+            alert(err.message);
+        }
+    };
 
     return (
         <div className="feed-container">
@@ -214,6 +253,16 @@ const Wall = () => {
                 <p>
                     <b>Om mig:</b> {wallUser.bio}
                 </p>
+
+                {isMyWall && (
+                    <button
+                        style={{marginBottom: "1rem"}}
+                        onClick={() => setIsEditingProfile(true)} // öppnar modal
+                    >
+                        Redigera profil
+                    </button>
+                )}
+
             </div>
 
             {/* Skapa nytt inlägg */}
@@ -293,6 +342,53 @@ const Wall = () => {
                     </div>
                 </div>
             )}
+
+            {isEditingProfile && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h3>Redigera profil</h3>
+
+                        <input
+                            type="text"
+                            placeholder="Display name"
+                            value={wallUser.displayName || ""}
+                            onChange={(e) =>
+                                setWallUser(prev => ({
+                                    ...prev, displayName: e.target.value
+                                }))
+                            }
+                        />
+
+                        <textarea
+                            placeholder="Bio"
+                            value={wallUser.bio || ""}
+                            onChange={(e) =>
+                                setWallUser(prev => ({
+                                    ...prev, bio: e.target.value
+                                }))
+                            }
+                        />
+
+                        <input
+                            type="text"
+                            placeholder="Bild-URL"
+                            value={wallUser.profileImagePath || ""}
+                            onChange={(e) =>
+                                setWallUser(prev => ({
+                                    ...prev, profileImagePath: e.target.value
+                                }))
+                            }
+                        />
+
+                        <div className="modal-actions">
+                            <button onClick={saveProfile}>Spara</button>
+                            <button onClick={() => setIsEditingProfile(false)}>Avbryt</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
         </div>
     );
 };
