@@ -46,7 +46,7 @@ export const AuthProvider = ({children}) => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("userId", data.userId);
 
-        const userRes = await fetch(`${API_BASE_URL}/users/${data.userId}`, {
+        const userRes = await fetch(`${API_BASE_URL}/users/me`, {
             headers: {
                 Authorization: `Bearer ${data.token}`,
             }
