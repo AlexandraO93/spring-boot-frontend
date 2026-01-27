@@ -1,0 +1,55 @@
+.friendship-btn {
+    padding: 0.35rem 0.9rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    border: 1px solid #3a4652;
+    background-color: #1f2d3a;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    color: white;
+}
+
+/* Add Friend – blå */
+.friendship-add {
+    color: #4c7dff;
+}
+
+.friendship-add:hover {
+    background-color: #0e2030;
+}
+
+/* Request sent – grå */
+.friendship-pending {
+    color: #9aa0a6;
+    cursor: default;
+    opacity: 0.7;
+}
+
+/* Accept – grön */
+.friendship-accept {
+    color: #4caf50;
+}
+
+.friendship-accept:hover {
+    background-color: #0e2030;
+}
+
+/* Reject – röd */
+.friendship-reject {
+    color: #ff6b6b;
+}
+
+.friendship-reject:hover {
+    background-color: #0e2030;
+}
+
+/* Friends ✓ – label */
+.friendship-label {
+    display: inline-block;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    background-color: #1f2d3a;
+    border: 1px solid #3a4652;
+    color: #4caf50;
+}
