@@ -76,12 +76,22 @@ body {
 }
 
 /* ===== Vänner-knappar och layout ===== */
+.friendship-wrapper {
+    display: flex;
+    flex-direction: column; /* stapla text + knapp */
+    justify-content: flex-end; /* tryck ner allt till botten */
+    align-items: flex-end; /* placera allt till höger */
+    height: 100%;
+}
+
 .friendship-wrapper * {
-    width: 100%; /* Alla element fyller boxens bredd */
     font-size: 0.7rem; /* Mindre text */
     padding: 0.25rem 0.5rem; /* Kompakt spacing */
-    margin-top: 7rem; /* Luft ovanför */
-    margin-bottom: 1rem; /* Luft under */
+    margin: 0.3rem 0;
+}
+
+.friendship-wrapper button {
+    width: auto;
 }
 
 /* ===== Redigera profil-knappen ===== */
