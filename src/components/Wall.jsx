@@ -6,7 +6,7 @@ import {API_BASE_URL} from "../config/api.js";
 import {useParams} from "react-router-dom";
 import FriendshipButton from "./FriendshipButton.jsx";
 import FriendsList from "./FriendsList.jsx";
-
+import CommentsSection from "../components/CommentsSection";
 /*
  * Wall
  * 
@@ -170,6 +170,23 @@ const Wall = () => {
         }
     };
 
+    const handleLikePost = async (id) => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/posts/${id}/like`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (res.ok) {
+                fetchPosts(page);
+            }
+        } catch (error) {
+            console.error("Kunde inte gilla inlägget på väggen:", error);
+        }
+    };
+
     const handleDeletePost = (postId) => {
         const confirmed = window.confirm("Är du säker på att du vill ta bort inlägget?")
         if (!confirmed) return;
@@ -316,6 +333,15 @@ const Wall = () => {
                                         <button onClick={() => handleDeletePost(post.id)}>Ta bort</button>
                                     </div>
                                 )}
+                                <div className="post-actions">
+                                    <button
+                                        className={`like-btn ${post.likedByMe ? 'liked' : ''}`}
+                                        onClick={() => handleLikePost(post.id)}
+                                    >
+                                        {post.likedByMe ? '❤️' : '🤍'} {post.likeCount}
+                                    </button>
+                                </div>
+                                <CommentsSection postId={post.id} token={token} userId={userId}/>
                             </li>
                         ))}
                     </ul>
