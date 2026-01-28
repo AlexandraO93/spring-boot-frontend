@@ -8,8 +8,18 @@ hr {
     width: 60%;
     margin: 0 auto; /* centrerar horisontellt */
     padding-top: 2rem;
+}
 
+.feed-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* så rubriken och rutan ligger i samma höjd */
+    margin-bottom: 2rem;
+    margin-top: -2rem;
+}
 
+.feed-header-row h1 {
+    margin: 0; /* så rubriken inte trycker ner layouten */
 }
 
 .post-list {
@@ -50,4 +60,44 @@ hr {
 .dot {
     margin: 0 0.6rem;
     opacity: 0.6;
+}
+
+.friend-requests-box-feed {
+    background: var(--bg-lightbrown);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.2rem 0.6rem 0.4rem 1.2rem;
+    margin-bottom: 0;
+    width: 40%; /* så den följer högerkolumnens bredd */
+    box-sizing: border-box;
+    font-size: 0.75rem;
+    align-text: center;
+}
+
+.friend-request-item-feed {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-bottom: 0.5rem;
+    gap: 2rem;
+}
+
+.friend-request-item-feed button {
+    background: var(--accent);
+    color: var(--text-light);
+    border: none;
+    border-radius: 4px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+
+.friend-request-item-feed button:hover {
+    background: var(--accent-hover);
+}
+
+.link {
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+    font-size: 1rem;
 }

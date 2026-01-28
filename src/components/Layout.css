@@ -19,10 +19,10 @@
 
 .logout-button {
     padding: 0.4rem 0.9rem;
-    border: none;
+    border: 1px solid #c8b8ae;
     border-radius: 4px;
-    background-color: #1d1815;
-    color: white;
+    background-color: rgb(155, 120, 93);
+    color: #292626;
     cursor: pointer;
     font-size: 0.9rem;
     margin-right: 30px;

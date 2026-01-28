@@ -8,6 +8,7 @@
     --accent: #d98c5f; /* Accentfärg (knappar) */
     --accent-hover: #c27a52; /* Accentfärg vid hover */
     --bg-lightbrown: #3b2f28; /* Ljusare brun bakgrund för boxar */
+    --accent-beige: rgb(155, 120, 93) /* Ljusbeige färg för box */
 }
 
 /* ===== Layout för profilens två kolumner (vänster + höger) ===== */
@@ -167,8 +168,8 @@ body {
     padding: 0.25rem 0.5rem;
     font-size: 0.8rem;
     border-radius: 4px;
-    background-color: var(--bg-darker);
-    color: var(--text-light);
+    background-color: var(--accent-beige);
+    color: #0e0c0a;
     border: 1px solid var(--border);
     cursor: pointer;
 }
@@ -204,7 +205,8 @@ body {
 
 /* ===== Modal (popup-rutan) ===== */
 .modal {
-    background: var(--bg-dark);
+    background: var(--bg-lightbrown);
+    border: 1px solid var(--text-light);
     padding: 1.5rem;
     border-radius: 8px;
     width: 90%;
@@ -217,10 +219,11 @@ body {
     width: 100%; /* Fyller hela modalen */
     height: 100px; /* Fast höjd */
     margin-top: 1rem;
-    background: var(--bg-dark);
+    background: var(--text-light);
     color: var(--text-light);
     border: 1px solid var(--border);
     padding: 0.5rem;
+
 }
 
 /* ===== Knappraden i modalen ===== */

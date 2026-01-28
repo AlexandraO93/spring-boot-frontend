@@ -90,6 +90,8 @@ const Wall = () => {
         }
     };
 
+    const isMyWall = Number(userId) === Number(wallUserId);
+
     useEffect(() => {
         if (!token || !wallUserId) return;
         setPage(0);
@@ -99,7 +101,6 @@ const Wall = () => {
         if (!token || !wallUserId) return;
         fetchPosts(page);
     }, [page, token, wallUserId]);
-
 
     const handleCreatePost = async () => {
         if (!newPostText.trim()) {
@@ -203,8 +204,6 @@ const Wall = () => {
     if (loading || !wallUser) {
         return <p>Laddar inlägg...</p>;
     }
-
-    const isMyWall = Number(userId) === Number(wallUserId);
 
     const saveProfile = async () => {
         if (!token) return;

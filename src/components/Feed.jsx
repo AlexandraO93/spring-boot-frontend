@@ -35,6 +35,7 @@ const Feed = () => {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
+    const [friendRequests, setFriendRequests] = useState([]);
 
     const fetchPosts = async (pageToLoad = 0) => {
         if (!token) return;
@@ -68,14 +69,78 @@ const Feed = () => {
         fetchPosts(0);
     }, [token, userId]);
 
+    useEffect(() => {
+        if (!userId) return; // bara på min egen wall
+
+        const fetchRequests = async () => {
+            const res = await fetch(`${API_BASE_URL}/friendships/users/${userId}/requests`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+            if (!res.ok) {
+                console.error("Kunde inte hämta vänförfrågningar");
+                return;
+            }
+            const data = await res.json();
+            setFriendRequests(data);
+        };
+        fetchRequests();
+    }, [userId, token]);
+
     if (loading) {
         return <p>Laddar inlägg...</p>;
     }
 
+
+    const accept = async (requestId) => {
+        await fetch(`${API_BASE_URL}/friendships/${requestId}/accept?userId=${userId}`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+        setFriendRequests(prev => prev.filter(r => r.id !== requestId));
+    };
+
+    const decline = async (requestId) => {
+        await fetch(`${API_BASE_URL}/friendships/${requestId}/reject?userId=${userId}`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+        setFriendRequests(prev => prev.filter(r => r.id !== requestId));
+    };
+
     return (
         <div className="feed-container">
-            <Link to={`/wall/${userId}`}>Till min sida</Link>
-            <h1>Inlägg</h1>
+            <div className="feed-header-row">
+                <h1>Inlägg</h1>
+
+                <div className="friend-requests-box-feed">
+                    <h3>Vänförfrågningar</h3>
+
+                    {friendRequests.length === 0 ? (
+                        <p>Inga vänförfrågningar just nu.</p>
+                    ) : (
+                        friendRequests.map(req => (
+                            <div key={req.id} className="friend-request-item-feed">
+                                <span>{req.requester.username}</span>
+                                <button onClick={() => accept(req.id)}>Acceptera</button>
+                                <button onClick={() => decline(req.id)}>Avvisa</button>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </div>
+
+            <h1 className="link">
+                <Link to={`/wall/${userId}`}>Till min sida</Link>
+            </h1>
 
             {posts.length === 0 && <p>Inga inlägg hittades</p>}
 
@@ -99,6 +164,7 @@ const Feed = () => {
                     </li>
                 ))}
             </ul>
+
             {/* 🟦 Ladda fler-knappen */}
             {hasMore && (
                 <button
