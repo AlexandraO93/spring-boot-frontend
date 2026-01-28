@@ -4,7 +4,8 @@ import "./Feed.css";
 import "./Wall.css";
 import {API_BASE_URL} from "../config/api.js";
 import {useParams} from "react-router-dom";
-
+import FriendshipButton from "./FriendshipButton.jsx";
+import FriendsList from "./FriendsList.jsx";
 
 /*
  * Wall
@@ -261,84 +262,96 @@ const Wall = () => {
 
     return (
         <div className="feed-container">
-            <h1 className="center">{wallUser.displayName}</h1>
 
-            <div className="about-me">
-                <p>
-                    <b>Om mig:</b> {wallUser.bio}
-                </p>
+            <h1 className="profile-name">{wallUser.displayName}</h1>
 
-                {isMyWall && (
-                    <button
-                        style={{marginBottom: "1rem"}}
-                        onClick={() => setIsEditingProfile(true)} // öppnar modal
-                    >
-                        Redigera profil
-                    </button>
-                )}
+            <div className="wall-layout">
+                {/* Header */}
+                <div className="left-column">
+                    <div className="about-me">
+                        <p><b>Om mig:</b> {wallUser.bio}</p>
 
-            </div>
+                        {isMyWall && (
+                            <button
+                                className="edit-profile-btn"
+                                onClick={() => setIsEditingProfile(true)}
+                            >
+                                Redigera profil
+                            </button>
+                        )}
+                    </div>
+                    <FriendsList userId={wallUserId}/>
+                </div>
 
-            {/* Skapa nytt inlägg */}
-            {isMyWall && (
-                <div className="create-post">
+                <div className="right-column">
+                    {/* 🔥 Vänskapsknappen */}
+                    {!isMyWall && (
+                        <div className="friendship-wrapper">
+                            <FriendshipButton profileUserId={wallUserId}/>
+                        </div>
+                    )}
+
+                    {/* Skapa nytt inlägg */}
+                    {isMyWall && (
+                        <div className="create-post small-create-post">
                 <textarea
                     value={newPostText}
                     onChange={(e) => setNewPostText(e.target.value)}
                     placeholder="Skriv ett nytt inlägg..."
                 />
-                    <button onClick={handleCreatePost}>
-                        Publicera
-                    </button>
+                            <button onClick={handleCreatePost}>Publicera</button>
+                        </div>
+                    )}
+                    <ul className="post-list">
+                        {posts.map((post) => (
+                            <li key={post.id} className="post-card">
+                                <p className="post-text">{post.text}</p>
+                                <hr/>
+                                <small className="post-date">
+                                    {new Date(post.createdAt).toLocaleString()}
+                                </small>
+
+                                {isMyWall && Number(userId) === post.userId && (
+                                    <div className="post-actions">
+                                        <button onClick={() => handleEditPost(post.id, post.text)}>Redigera</button>
+                                        <button onClick={() => handleDeletePost(post.id)}>Ta bort</button>
+                                    </div>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+
+                    {posts.length === 0 && <p>Inga inlägg hittades</p>}
+
+                    {/* 🟦 Ladda fler-knappen */}
+                    {hasMore && (
+                        <button
+                            onClick={() => {
+                                const nextPage = page + 1;
+                                setPage(nextPage);
+                                fetchPosts(nextPage);
+                            }}
+                        >
+                            Ladda fler
+                        </button>
+                    )}
+
+                    {/*Tagit hjälp av AI för att få fram en "föregående" knapp*/}
+                    {page > 0 && (
+                        <button
+                            onClick={() => {
+                                const previousPage = page - 1;
+                                setPage(previousPage);
+                                setPosts([]); // rensa listan
+                                fetchPosts(previousPage);
+                            }}
+                        >
+                            Föregående
+                        </button>
+                    )}
                 </div>
-            )}
+            </div>
 
-            {posts.length === 0 && <p>Inga inlägg hittades</p>}
-
-            <ul className="post-list">
-                {posts.map((post) => (
-                    <li key={post.id} className="post-card">
-                        <p className="post-text">{post.text}</p>
-                        <hr/>
-                        <small className="post-date">
-                            {new Date(post.createdAt).toLocaleString()}
-                        </small>
-
-                        {isMyWall && Number(userId) === post.userId && (
-                            <div className="post-actions">
-                                <button onClick={() => handleEditPost(post.id, post.text)}>Redigera</button>
-                                <button onClick={() => handleDeletePost(post.id)}>Ta bort</button>
-                            </div>
-                        )}
-                    </li>
-                ))}
-            </ul>
-            {/* 🟦 Ladda fler-knappen */}
-            {hasMore && (
-                <button
-                    onClick={() => {
-                        const nextPage = page + 1;
-                        setPage(nextPage);
-                        fetchPosts(nextPage);
-                    }}
-                >
-                    Ladda fler
-                </button>
-            )}
-
-            {/*Tagit hjälp av AI för att få fram en "föregående" knapp*/}
-            {page > 0 && (
-                <button
-                    onClick={() => {
-                        const previousPage = page - 1;
-                        setPage(previousPage);
-                        setPosts([]); // rensa listan
-                        fetchPosts(previousPage);
-                    }}
-                >
-                    Föregående
-                </button>
-            )}
             {isEditing && (
                 <div className="modal-overlay">
                     <div className="modal">
@@ -401,8 +414,6 @@ const Wall = () => {
                     </div>
                 </div>
             )}
-
-
         </div>
     );
 };

@@ -1,63 +1,155 @@
-/* ===== Skapa nytt inlägg ===== */
+:root {
+    /* Globala färgvariabler som används överallt i designen */
+    --bg-dark: #2a2420; /* Mörk bakgrund för kort och sektioner */
+    --bg-darker: #1d1815; /* Ännu mörkare bakgrund, används i textarea */
+    --border: #3a322d; /* Mörkbrun kantfärg */
+    --text-light: #f0e8e2; /* Ljus beige text */
+    --text-muted: #c8b8ae; /* Dämpad beige text */
+    --accent: #d98c5f; /* Accentfärg (knappar) */
+    --accent-hover: #c27a52; /* Accentfärg vid hover */
+    --bg-lightbrown: #3b2f28; /* Ljusare brun bakgrund för boxar */
+}
 
+/* ===== Layout för profilens två kolumner (vänster + höger) ===== */
+.wall-layout {
+    display: flex; /* Gör layouten till två kolumner */
+    justify-content: space-between; /* Trycker kolumnerna åt varsin sida */
+    align-items: flex-start; /* Justerar dem i toppen */
+    gap: 3rem; /* Luft mellan kolumnerna */
+    width: 100%; /* Täcker hela sidans bredd */
+    margin: 0 auto; /* Centrerar layouten horisontellt */
+    margin-bottom: 1rem; /* Luft under headern */
+}
+
+/* ===== Vänsterkolumnens boxar (Om mig + Vänner) ===== */
+.left-column {
+    background: var(--bg-lightbrown); /* Ljusare brun bakgrund */
+    border: 1px solid var(--text-muted); /* Beige kant runt boxarna */
+    border-radius: 6px; /* Rundade hörn */
+    padding: 1rem; /* Luft inuti boxarna */
+    flex: 0 0 40%; /* Låser boxens bredd till 45% */
+    display: flex;
+    flex-direction: column; /* Staplar innehåll vertikalt */
+    gap: 1rem; /* Luft mellan element i boxen */
+    align-items: stretch;
+    margin-bottom: 1rem; /* Luft under varje box */
+}
+
+/* ===== Högerkolumn (inläggsruta + inlägg) ===== */
+.right-column {
+    flex: 0 0 60%; /* Högerkolumnen tar 60% av bredden */
+    display: flex;
+    flex-direction: column; /* Staplar innehåll vertikalt */
+    justify-content: flex-end;
+    align-items: stretch;
+    height: 100%;
+    gap: 1rem; /* Luft mellan elementen */
+}
+
+/* ===== Grundinställningar för text och font ===== */
+body {
+    font-family: "Inter", "Segoe UI", sans-serif; /* Modern font */
+    color: var(--text-light); /* Ljus text */
+    line-height: 1.6; /* Mer lättläst text */
+}
+
+/* ===== Profilnamnet (Admin) ===== */
+.profile-name {
+    text-align: left; /* Vänsterjusterad rubrik */
+    font-size: 3.5rem; /* Stor rubrik */
+    font-weight: 500;
+    letter-spacing: 0.5px; /* Lite mer luft mellan bokstäver */
+    margin-bottom: 3rem;
+    margin-top: -5rem; /* Flyttar upp rubriken närmare headern */
+    color: var(--text-muted); /* Beige ton */
+}
+
+/* ===== Om mig-texten ===== */
+.about-me {
+    width: 100%; /* Fyller hela boxens bredd */
+    margin-bottom: 1rem;
+    margin-top: 0;
+    font-size: 0.8rem;
+    text-align: left; /* Centrerad text */
+    white-space: pre-wrap; /* Behåller radbrytningar från databasen */
+    line-height: 1.4;
+}
+
+/* ===== Vänner-knappar och layout ===== */
+.friendship-wrapper * {
+    width: 100%; /* Alla element fyller boxens bredd */
+    font-size: 0.7rem; /* Mindre text */
+    padding: 0.25rem 0.5rem; /* Kompakt spacing */
+    margin-top: 7rem; /* Luft ovanför */
+    margin-bottom: 1rem; /* Luft under */
+}
+
+/* ===== Redigera profil-knappen ===== */
+.edit-profile-btn {
+    background-color: var(--accent); /* Accentfärg */
+    color: var(--text-light); /* Ljus text */
+    border: none;
+    border-radius: 2px;
+    padding: 0.2rem 0.4rem;
+    font-size: 0.6rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease; /* Mjuk hover */
+}
+
+.edit-profile-btn:hover {
+    background-color: var(--accent-hover); /* Mörkare vid hover */
+}
+
+/* ===== Skapa nytt inlägg – ytterboxen ===== */
 .create-post {
-    background: #0e2030;
-    border: 1px solid rgb(56 64 75);
+    background: var(--bg-lightbrown); /* Ljusare brun bakgrund */
+    border: 1px solid var(--border); /* Mörk brun kant */
     border-radius: 4px;
-    padding: 1rem;
-    margin-bottom: 2rem;
+    padding: 0.6rem;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    margin-top: 3rem;
 }
 
-.center {
-    text-align: center;
-}
-
-.about-me {
-    margin-top: -20px;
-    margin-bottom: 20px;
-    text-align: center;
-    white-space: pre-wrap; /* visar radbrytningar */
-}
-
+/* ===== Textfältet där man skriver inlägg ===== */
 .create-post textarea {
-    background: #08131d;
-    color: #fff;
-    border: 1px solid rgb(56 64 75);
+    background: var(--bg-darker); /* Mörk bakgrund */
+    color: var(--text-light); /* Ljus text */
+    border: 1px solid var(--border);
     border-radius: 4px;
-    padding: 0.75rem;
-    font-size: 1rem;
-    resize: vertical;
-    min-height: 80px;
+    padding: 0.6rem;
+    font-size: 0.9rem;
+    resize: vertical; /* Tillåter att dra i höjdled */
+    min-height: 50px; /* Minsta höjd */
 }
 
 .create-post textarea:focus {
     outline: none;
-    border-color: #4c7dff;
+    border-color: var(--accent); /* Highlight vid fokus */
 }
 
-/* Knappen */
+/* ===== Publicera-knappen ===== */
 .create-post button {
-    align-self: flex-end;
-    background-color: #4c7dff;
-    color: white;
+    align-self: flex-end; /* Flyttar knappen till höger */
+    background-color: var(--accent);
+    color: var(--text-light);
     border: none;
     border-radius: 4px;
     padding: 0.4rem 1.1rem;
-    font-size: 0.9rem;
+    font-size: 0.7rem;
     cursor: pointer;
     transition: background-color 0.15s ease;
 }
 
 .create-post button:hover {
-    background-color: #3a68d8;
+    background-color: var(--accent-hover);
 }
 
+/* ===== Knappar under varje inlägg ===== */
 .post-actions {
-    display: flex;
-    gap: 1rem;
+    display: flex; /* Lägger knapparna i rad */
+    gap: 1rem; /* Luft mellan knapparna */
     margin-top: 0.5rem;
 }
 
@@ -65,55 +157,79 @@
     padding: 0.25rem 0.5rem;
     font-size: 0.8rem;
     border-radius: 4px;
-    background-color: #1f2d3a;
-    color: white;
-    border: 1px solid #3a4652;
+    background-color: var(--bg-darker);
+    color: var(--text-light);
+    border: 1px solid var(--border);
     cursor: pointer;
 }
 
 .post-actions button:hover {
-    background-color: #2c3e50;
+    background-color: var(--accent-hover);
 }
 
+/* ===== Inläggskort ===== */
+.post-card {
+    width: 100%; /* Fyller högerkolumnens bredd */
+    background: var(--bg-dark);
+    border: 1px solid var(--text-muted); /* Beige kant */
+    color: var(--text-light);
+    border-radius: 4px;
+    padding: 0.6rem;
+    margin-bottom: 1rem;
+    box-sizing: border-box; /* Säkerställer att padding räknas rätt */
+}
+
+/* ===== Modal-overlay (mörk bakgrund bakom popup) ===== */
 .modal-overlay {
-    position: fixed;
+    position: fixed; /* Ligger över allt annat */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(20, 15, 12, 0.7); /* Transparent mörk overlay */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+/* ===== Modal (popup-rutan) ===== */
 .modal {
-    background: #1f2d3a;
+    background: var(--bg-dark);
     padding: 1.5rem;
     border-radius: 8px;
     width: 90%;
-    max-width: 400px;
-    color: white;
+    max-width: 400px; /* Begränsar maxbredden */
+    color: var(--text-light);
 }
 
+/* ===== Textarea i modalen ===== */
 .modal textarea {
-    width: 100%;
-    height: 100px;
+    width: 100%; /* Fyller hela modalen */
+    height: 100px; /* Fast höjd */
     margin-top: 1rem;
-    background: #2c3e50;
-    color: white;
-    border: 1px solid #3a4652;
+    background: var(--bg-dark);
+    color: var(--text-light);
+    border: 1px solid var(--border);
     padding: 0.5rem;
 }
 
+/* ===== Knappraden i modalen ===== */
 .modal-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-end; /* Flyttar knapparna till höger */
     gap: 1rem;
     margin-top: 1rem;
 }
 
 .modal-actions button {
-    padding: 0.4rem 0.8rem;
+    padding: 0.4rem 0.8rem; /* Gör knapparna lättare att klicka */
     font-size: 0.9rem;
+}
+
+/* ===== Container för hela feeden ===== */
+.feed-container {
+    width: 100%;
+    max-width: 1500px; /* Begränsar maxbredden */
+    margin: 0 auto; /* Centrerar hela sidan */
+    padding: 7rem; /* Luft runt hela layouten */
 }
