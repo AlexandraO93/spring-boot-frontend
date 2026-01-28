@@ -25,11 +25,12 @@ const AuthForm = () => {
             const res = await fetch(`${API_BASE_URL}/users/register`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({username, email, password}),
+                body: JSON.stringify({username, password, email}),
             });
             const data = await res.json();
-            if (!data.token || res.json()) {
-                throw new Error("Registrering misslyckades");
+            if (!res.ok) {
+                alert("Registrering misslyckades");
+                return;
             }
 
             alert("Konto skapat! Logga in.");
