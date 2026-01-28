@@ -4,6 +4,8 @@ import {useAuth} from "../context/useAuth";
 import {Link} from "react-router-dom";
 import "./Feed.css";
 import {API_BASE_URL} from "../config/api.js";
+import CommentsSection from "./CommentsSection.jsx";
+
 
 /*
  * Feed
@@ -92,6 +94,23 @@ const Feed = () => {
     if (loading) {
         return <p>Laddar inlägg...</p>;
     }
+    const handleLikePost = async (postId) => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/posts/${postId}/like`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (res.ok) {
+                // Ladda om inläggen så att siffran och hjärtat uppdateras
+                fetchPosts(page);
+            }
+        } catch (error) {
+            console.error("Kunde inte gilla inlägget:", error);
+        }
+    };
 
 
     const accept = async (requestId) => {
@@ -161,6 +180,19 @@ const Feed = () => {
                         <small className="post-date">
                             {new Date(post.createdAt).toLocaleString()}
                         </small>
+                        <div className="post-actions">
+                            <button
+                                className={`like-btn ${post.likedByMe ? 'liked' : ''}`}
+                                onClick={() => handleLikePost(post.id)}
+                            >
+                                {post.likedByMe ? '❤️' : '🤍'} {post.likeCount}
+                            </button>
+                        </div>
+                        <CommentsSection
+                            postId={post.id}
+                            token={token}
+                            userId={userId}
+                        />
                     </li>
                 ))}
             </ul>
