@@ -220,7 +220,7 @@ body {
     height: 100px; /* Fast höjd */
     margin-top: 1rem;
     background: var(--text-light);
-    color: var(--text-light);
+    color: var(--border);
     border: 1px solid var(--border);
     padding: 0.5rem;
 
