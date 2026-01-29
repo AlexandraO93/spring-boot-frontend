@@ -465,7 +465,12 @@ const Wall = () => {
                             accept="image/*"
                             onChange={(e) => {
                                 if (e.target.files && e.target.files[0]) {
-                                    setWallUser(prev => ({...prev, newProfileImage: e.target.files[0]}));
+                                    const file = e.target.files[0];
+                                    const previewUrl = URL.createObjectURL(file)
+                                    setWallUser(prev => ({
+                                        ...prev, newProfileImage: file,
+                                        previewUrl: previewUrl
+                                    }));
                                 }
                             }}
                         />
@@ -473,7 +478,7 @@ const Wall = () => {
                         {/* Förhandsvisning visas endast om en bild valts */}
                         {wallUser.newProfileImage && (
                             <img
-                                src={URL.createObjectURL(wallUser.newProfileImage)}
+                                src={wallUser.previewUrl}
                                 alt="Förhandsvisning"
                                 className="profile-avatar preview-image"
                             />
