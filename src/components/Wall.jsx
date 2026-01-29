@@ -6,6 +6,8 @@ import {API_BASE_URL} from "../config/api.js";
 import {useParams} from "react-router-dom";
 import FriendshipButton from "./FriendshipButton.jsx";
 import FriendsList from "./FriendsList.jsx";
+import {useProfileImage} from "./useProfileImage.jsx";
+
 import CommentsSection from "../components/CommentsSection";
 /*
  * Wall
@@ -58,6 +60,10 @@ const Wall = () => {
     const [editingText, setEditingText] = useState("");
     const [isEditingProfile, setIsEditingProfile] = useState(false);
 
+    const [imageRefreshKey, setImageRefreshKey] = useState(0);
+    const profileImageUrl = useProfileImage(wallUserId, token, imageRefreshKey);
+
+
     const fetchPosts = async (pageToLoad = 0) => {
         if (!token || !wallUserId) {
             setLoading(false);
@@ -83,6 +89,7 @@ const Wall = () => {
             setPosts(data.posts.content);
             setWallUser(data.user);
             setHasMore(!data.posts.last);
+            console.log("Fetched wallUser:", data.user);
         } catch (error) {
             console.error(error);
         } finally {
@@ -101,6 +108,14 @@ const Wall = () => {
         if (!token || !wallUserId) return;
         fetchPosts(page);
     }, [page, token, wallUserId]);
+
+    useEffect(() => {
+        return () => {
+            if (wallUser?.newProfileImage) {
+                URL.revokeObjectURL(wallUser.newProfileImage);
+            }
+        };
+    }, [wallUser?.newProfileImage]);
 
     const handleCreatePost = async () => {
         if (!newPostText.trim()) {
@@ -226,18 +241,17 @@ const Wall = () => {
         if (!token) return;
 
         try {
-            const updateData = {
-                displayName: wallUser.displayName?.trim(),
-                bio: wallUser.bio?.trim(),
-                profileImagePath: wallUser.profileImagePath?.trim() || null,
-            };
-
-            console.log("Skickar updateData: ", updateData);
-
-            if (!updateData.displayName || !updateData.bio) {
+            // 1️⃣ Kontrollera att displayName och bio inte är tomma
+            if (!wallUser.displayName?.trim() || !wallUser.bio?.trim()) {
                 alert("Display name och bio får inte vara tomma.");
                 return;
             }
+
+            // 2️⃣ Skicka uppdaterad profilinfo
+            const profileData = {
+                displayName: wallUser.displayName.trim(),
+                bio: wallUser.bio.trim(),
+            };
 
             const res = await fetch(`${API_BASE_URL}/users/me`, {
                 method: "PUT",
@@ -245,28 +259,43 @@ const Wall = () => {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(updateData),
+                body: JSON.stringify(profileData),
             });
 
             if (!res.ok) {
-                console.log("Backend svarade med status:", res.status);
-                let errorMsg = "Kunde inte spara ändringar";
-                try {
-                    const errorData = await res.json();
-                    console.log("Error response från backend:", errorData);
-                    if (errorData?.message) errorMsg = errorData.message;
-                } catch (e) {
-                    console.error("Fel vid läsning av error-respons", e);
-                }
-                throw new Error(errorMsg);
+                throw new Error("Kunde inte uppdatera profilinfo");
             }
 
-            const updatedUser = await res.json();
+            // 3️⃣ Om användaren valt ny profilbild, ladda upp den
+            if (wallUser.newProfileImage) {
+                const formData = new FormData();
+                formData.append("file", wallUser.newProfileImage);
+
+                const imgRes = await fetch(`${API_BASE_URL}/users/me/profile-image`, {
+                    method: "POST",
+                    headers: {Authorization: `Bearer ${token}`},
+                    body: formData, // Content-Type sätts automatiskt
+                });
+
+                if (!imgRes.ok) throw new Error("Kunde inte ladda upp profilbild");
+
+                // Rensa det temporära fältet så vi inte skapar memory leaks
+                setWallUser(prev => ({...prev, newProfileImage: null}));
+                setImageRefreshKey(prev => prev + 1);
+            }
+
+            // 4️⃣ Hämta uppdaterad användare från backend
+            const userRes = await fetch(`${API_BASE_URL}/users/me`, {
+                headers: {Authorization: `Bearer ${token}`},
+            });
+
+            if (!userRes.ok) throw new Error("Kunde inte hämta uppdaterad användare");
+
+            const updatedUser = await userRes.json();
             setWallUser(updatedUser);
 
-            if (isMyWall) {
-                setUser(updatedUser);
-            }
+            // Om det är min wall, uppdatera context
+            if (isMyWall) setUser(updatedUser);
 
             setIsEditingProfile(false);
 
@@ -300,6 +329,15 @@ const Wall = () => {
                 </div>
 
                 <div className="right-column">
+
+                    <div className="create-post-avatar">
+                        <img
+                            src={profileImageUrl}
+                            alt="Profilbild"
+                            className="profile-avatar"
+                        />
+                    </div>
+
                     {/* 🔥 Vänskapsknappen */}
                     {!isMyWall && (
                         <div className="friendship-wrapper">
@@ -421,16 +459,25 @@ const Wall = () => {
                             }
                         />
 
+                        {/* Filväljare */}
                         <input
-                            type="text"
-                            placeholder="Bild-URL"
-                            value={wallUser.profileImagePath || ""}
-                            onChange={(e) =>
-                                setWallUser(prev => ({
-                                    ...prev, profileImagePath: e.target.value
-                                }))
-                            }
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                    setWallUser(prev => ({...prev, newProfileImage: e.target.files[0]}));
+                                }
+                            }}
                         />
+
+                        {/* Förhandsvisning visas endast om en bild valts */}
+                        {wallUser.newProfileImage && (
+                            <img
+                                src={URL.createObjectURL(wallUser.newProfileImage)}
+                                alt="Förhandsvisning"
+                                className="profile-avatar preview-image"
+                            />
+                        )}
 
                         <div className="modal-actions">
                             <button onClick={saveProfile}>Spara</button>
