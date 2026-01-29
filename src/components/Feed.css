@@ -101,3 +101,17 @@ hr {
     margin-left: 1rem;
     font-size: 1rem;
 }
+
+.post-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.post-author-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #eee;
+}

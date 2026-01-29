@@ -7,30 +7,34 @@ import {API_BASE_URL} from "../config/api.js";
  * @param {string} token - JWT-token
  * @returns {string} - URL till profilbild, fallback till /default-avatar.png
  */
-export const useProfileImage = (username, token) => {
-    const [imageUrl, setImageUrl] = useState("/default-avatar.png"); // fallback initialt
+export const useProfileImage = (username, token, refreshKey) => {
+    const [imageUrl, setImageUrl] = useState("/default-avatar.png");
 
     useEffect(() => {
         if (!username || !token) return;
 
-        let isMounted = true; // undvika state update efter unmount
+        let isMounted = true;
+        let objectUrl = null;
 
         const fetchImage = async () => {
             try {
-                const res = await fetch(`${API_BASE_URL}/users/${username}/profile-image`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+                const res = await fetch(
+                    `${API_BASE_URL}/users/${username}/profile-image`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
                 if (!res.ok) throw new Error("Could not fetch image");
 
                 const blob = await res.blob();
-                const url = URL.createObjectURL(blob);
+                objectUrl = URL.createObjectURL(blob);
 
-                if (isMounted) setImageUrl(url);
+                if (isMounted) setImageUrl(objectUrl);
             } catch (err) {
-                console.warn("Profile image fetch failed, using default:", err);
+                console.warn("Profile image fetch failed:", err);
                 if (isMounted) setImageUrl("/default-avatar.png");
             }
         };
@@ -39,8 +43,9 @@ export const useProfileImage = (username, token) => {
 
         return () => {
             isMounted = false;
+            if (objectUrl) URL.revokeObjectURL(objectUrl); // 🧠 viktigt!
         };
-    }, [username, token]);
+    }, [username, token, refreshKey]);
 
     return imageUrl;
 };

@@ -4,6 +4,7 @@ import {useAuth} from "../context/useAuth";
 import {Link} from "react-router-dom";
 import "./Feed.css";
 import {API_BASE_URL} from "../config/api.js";
+import {useProfileImage} from "./useProfileImage.jsx";
 
 /*
  * Feed
@@ -36,6 +37,24 @@ const Feed = () => {
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const [friendRequests, setFriendRequests] = useState([]);
+
+    const PostAuthor = ({userId, username}) => {
+        const {token} = useAuth();
+        const profileImageUrl = useProfileImage(userId, token);
+
+        return (
+            <small className="post-author">
+                <img
+                    src={profileImageUrl}
+                    alt="Profilbild"
+                    className="post-author-avatar"
+                />
+                <Link to={`/wall/${userId}`}>
+                    {username || "Okänd"}
+                </Link>
+            </small>
+        );
+    };
 
     const fetchPosts = async (pageToLoad = 0) => {
         if (!token) return;
@@ -149,12 +168,10 @@ const Feed = () => {
 
                     <li key={post.id} className="post-card">
                         <p className="post-text">{post.text}</p>
-                        <small className="post-author">
-                            av{" "}
-                            <Link to={`/wall/${post.userId}`}>
-                                {post.username || post.user?.username || "Okänd"}
-                            </Link>
-                        </small>
+                        <PostAuthor
+                            userId={post.userId}
+                            username={post.username || post.user?.username}
+                        />
 
                         <span className="dot">·</span>
 

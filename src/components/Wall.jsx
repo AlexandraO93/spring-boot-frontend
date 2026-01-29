@@ -58,7 +58,9 @@ const Wall = () => {
     const [editingPostId, setEditingPostId] = useState(null);
     const [editingText, setEditingText] = useState("");
     const [isEditingProfile, setIsEditingProfile] = useState(false);
-    const profileImageUrl = useProfileImage(wallUserId, token);
+
+    const [imageRefreshKey, setImageRefreshKey] = useState(0);
+    const profileImageUrl = useProfileImage(wallUserId, token, imageRefreshKey);
 
 
     const fetchPosts = async (pageToLoad = 0) => {
@@ -261,6 +263,7 @@ const Wall = () => {
 
                 // Rensa det temporära fältet så vi inte skapar memory leaks
                 setWallUser(prev => ({...prev, newProfileImage: null}));
+                setImageRefreshKey(prev => prev + 1);
             }
 
             // 4️⃣ Hämta uppdaterad användare från backend
@@ -306,15 +309,14 @@ const Wall = () => {
                 </div>
 
                 <div className="right-column">
-                    {isMyWall && (
-                        <div className="create-post-avatar">
-                            <img
-                                src={profileImageUrl}
-                                alt="Profilbild"
-                                className="profile-avatar"
-                            />
-                        </div>
-                    )}
+
+                    <div className="create-post-avatar">
+                        <img
+                            src={profileImageUrl}
+                            alt="Profilbild"
+                            className="profile-avatar"
+                        />
+                    </div>
 
                     {/* 🔥 Vänskapsknappen */}
                     {!isMyWall && (
