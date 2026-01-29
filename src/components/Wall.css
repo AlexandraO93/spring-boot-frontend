@@ -246,3 +246,38 @@ body {
     margin: 0 auto; /* Centrerar hela sidan */
     padding: 7rem; /* Luft runt hela layouten */
 }
+
+.create-post-avatar {
+    display: flex;
+    justify-content: center;
+    margin-top: -100px;
+    margin-bottom: -50px;
+}
+
+.profile-avatar {
+    width: 360px;
+    height: 240px;
+    border-radius: 5%;
+    object-fit: cover;
+}
+
+.large-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.image-upload-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.preview-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-top: 10px;
+    margin-left: 120px; /* 👈 flyttar preview åt höger */
+}
