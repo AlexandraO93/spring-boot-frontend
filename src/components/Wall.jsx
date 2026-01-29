@@ -8,6 +8,7 @@ import FriendshipButton from "./FriendshipButton.jsx";
 import FriendsList from "./FriendsList.jsx";
 import {useProfileImage} from "./useProfileImage.jsx";
 
+import CommentsSection from "../components/CommentsSection";
 /*
  * Wall
  * 
@@ -184,6 +185,23 @@ const Wall = () => {
         }
     };
 
+    const handleLikePost = async (id) => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/posts/${id}/like`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (res.ok) {
+                fetchPosts(page);
+            }
+        } catch (error) {
+            console.error("Kunde inte gilla inlägget på väggen:", error);
+        }
+    };
+
     const handleDeletePost = (postId) => {
         const confirmed = window.confirm("Är du säker på att du vill ta bort inlägget?")
         if (!confirmed) return;
@@ -280,6 +298,7 @@ const Wall = () => {
             if (isMyWall) setUser(updatedUser);
 
             setIsEditingProfile(false);
+
         } catch (err) {
             console.error("Save profile error", err);
             alert(err.message);
@@ -292,6 +311,7 @@ const Wall = () => {
             <h1 className="profile-name">{wallUser.displayName}</h1>
 
             <div className="wall-layout">
+                {/* Header */}
                 <div className="left-column">
                     <div className="about-me">
                         <p><b>Om mig:</b> {wallUser.bio}</p>
@@ -351,6 +371,15 @@ const Wall = () => {
                                         <button onClick={() => handleDeletePost(post.id)}>Ta bort</button>
                                     </div>
                                 )}
+                                <div className="post-actions">
+                                    <button
+                                        className={`like-btn ${post.likedByMe ? 'liked' : ''}`}
+                                        onClick={() => handleLikePost(post.id)}
+                                    >
+                                        {post.likedByMe ? '❤️' : '🤍'} {post.likeCount}
+                                    </button>
+                                </div>
+                                <CommentsSection postId={post.id} token={token} userId={userId}/>
                             </li>
                         ))}
                     </ul>
